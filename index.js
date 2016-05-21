@@ -1,6 +1,7 @@
 var pixel = require('node-pixel')
 var five = require('johnny-five')
 var Forecast = require('forecast')
+var CronJob = require('cron').CronJob
 
 var board = new five.Board()
 var strip = null
@@ -33,6 +34,17 @@ function getColor(temperature) {
   return color[1]
 }
 
+function getForecast() {
+  return new Promise((resolve, reject) => {
+
+    forecast.get(position, (err, weather) =>{
+      if (err) return reject(err)
+      return resolve(weather)
+    })
+  })
+}
+
+
 board.on("ready", function() {
   strip = new pixel.Strip({
     board: this,
@@ -41,25 +53,14 @@ board.on("ready", function() {
   })
 
   strip.on("ready", function() {
-    board.repl.inject({
-      pixel: strip.pixel,
-      show: strip.show,
-      color: strip.color
-    })
-
-    var iterator = setInterval(() => {
-      if (strip.pixel(1).color().color == 'black') {
-        strip.color(temperature_color)
-      } else {
-        strip.color('black')
-      }
+    getForecast().then((weather) => {
+      console.log(weather)
+      var temperature = weather.currently.temperature
+      temperature_color = getColor(temperature)
+      strip.color(temperature_color)
       strip.show()
-    }, 1000) // Flash at 1Hz
-
-    forecast.get(position, function(err, weather) {
-      if (err) return console.dir(err)
-        var temperature = weather.currently.temperature
-        temperature_color = getColor(temperature)
+    }).catch((err) => {
+      console.log(err)
     })
   })
 })
