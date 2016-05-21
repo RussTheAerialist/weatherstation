@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cron": "^1.1.0",
+    "forecast": "^0.2.1",
     "johnny-five": "^0.9.50",
     "node-pixel": "^0.6.1"
   }
