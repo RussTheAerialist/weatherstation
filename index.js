@@ -52,6 +52,10 @@ function displayForecast(weather) {
   strip.show()
 }
 
+function handleError(err) {
+  console.log(err)
+}
+
 board.on("ready", function() {
   strip = new pixel.Strip({
     board: this,
@@ -61,8 +65,16 @@ board.on("ready", function() {
 
 
   strip.on("ready", function() {
-    getForecast().then(displayForecast).catch((err) => {
-      console.log(err)
+    new CronJob({
+      cronTime: '*/15 * * * *',
+      onTick: () => {
+        console.log('Fetching Weather')
+        strip.color('black')
+        strip.show()
+        getForecast().then(displayForecast).catch(handleError)
+      },
+      start: true,
+      runOnInit: true
     })
   })
 })
