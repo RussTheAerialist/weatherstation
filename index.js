@@ -44,22 +44,24 @@ function getForecast() {
   })
 }
 
+function displayForecast(weather) {
+  var nextXHours = weather.hourly.data.slice(0, strip.stripLength())
+  nextXHours.map((c, idx) => {
+    strip.pixel(idx).color(getColor(c.temperature))
+  })
+  strip.show()
+}
 
 board.on("ready", function() {
   strip = new pixel.Strip({
     board: this,
     controller: "FIRMATA",
-    strips: [ {pin: 6, length: 7} ]
+    strips: [ {pin: 6, length: 8} ]
   })
 
+
   strip.on("ready", function() {
-    getForecast().then((weather) => {
-      console.log(weather)
-      var temperature = weather.currently.temperature
-      temperature_color = getColor(temperature)
-      strip.color(temperature_color)
-      strip.show()
-    }).catch((err) => {
+    getForecast().then(displayForecast).catch((err) => {
       console.log(err)
     })
   })
