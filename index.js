@@ -12,7 +12,13 @@ board.on("ready", function() {
   })
 
   strip.on("ready", function() {
-    strip.color('#ff0000')
-    strip.show()
+    var iterator = setInterval(() => {
+      if (strip.pixel(1).color().color == 'black') {
+        strip.color('red')
+      } else {
+        strip.color('black')
+      }
+      strip.show()
+    }, 1000) // Flash at 1Hz
   })
 })
