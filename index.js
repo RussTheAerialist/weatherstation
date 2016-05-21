@@ -11,20 +11,9 @@ var forecast = new Forecast({
   service: 'forecast.io',
   key: apikey,
   units: 'celcius',
-  cache: true,
-  ttl: {
-    minutes: 15
-  }
+  cache: false,
 })
-var temperature_color = '#333333'
-var ranges = [
-  [ 0, 'blue' ],
-  [ 5, 'light-blue' ],
-  [ 10, 'grey' ],
-  [ 20, 'yellow' ],
-  [ 25, 'orange' ],
-  [ 30, 'red' ]
-]
+var ranges = require('./colors')
 
 function getColor(temperature) {
   var color = ranges.reduce((p, c) => {
@@ -47,6 +36,7 @@ function getForecast() {
 function displayForecast(weather) {
   var nextXHours = weather.hourly.data.slice(0, strip.stripLength())
   nextXHours.map((c, idx) => {
+    console.log(c.temperature)
     strip.pixel(idx).color(getColor(c.temperature))
   })
   strip.show()
@@ -66,7 +56,7 @@ board.on("ready", function() {
 
   strip.on("ready", function() {
     new CronJob({
-      cronTime: '*/15 * * * *',
+      cronTime: '*/5 * * * *',
       onTick: () => {
         console.log('Fetching Weather')
         strip.color('black')
