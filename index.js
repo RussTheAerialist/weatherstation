@@ -6,7 +6,7 @@ var CronJob = require('cron').CronJob
 var board = new five.Board()
 var strip = null
 var apikey = require('./.api_key.json')
-var position = require('./locations').seattle
+var position = require('./locations').nola
 var forecast = new Forecast({
   service: 'forecast.io',
   key: apikey,
@@ -14,6 +14,7 @@ var forecast = new Forecast({
   cache: false,
 })
 var ranges = require('./colors')
+var temperatureColors = new Array(8) // Probably should just make this a constant
 
 function getColor(temperature) {
   var color = ranges.reduce((p, c) => {
@@ -42,17 +43,30 @@ function getDailyValues(weather) {
 }
 
 function displayForecast(weather) {
-  strip.pixel(0).color(getColor(weather.currently.temperature))
+  temperatureColors[0] = getColor(weather.currently.temperature)
   var values = getHourlyValues(weather)
   values.map((c, idx) => {
-    console.log(c)
-    strip.pixel(idx+1).color(getColor(c))
+    temperatureColors[idx+1] = getColor(c)
   })
-  strip.show()
 }
 
 function handleError(err) {
   console.log(err)
+}
+
+function twinkle() {
+  for(var i=0; i<strip.stripLength(); i++) {
+    var pixel = strip.pixel(i)
+    pixel.color(temperatureColors[i])
+    var color = pixel.color() // Converts from hex to something we can use
+    var randomValue = 1.0 - ((Math.random()) / 5.0) // 20% variation in color
+    var red = color.r * randomValue
+    var green = color.g * randomValue
+    var blue = color.b * randomValue
+    console.log(red, green, blue)
+    pixel.color([Math.round(red), Math.round(green), Math.round(blue)])
+  }  
+  strip.show()
 }
 
 board.on("ready", function() {
@@ -64,6 +78,7 @@ board.on("ready", function() {
 
 
   strip.on("ready", function() {
+    setInterval(twinkle, 1000/30) // 10 fps
     new CronJob({
       cronTime: '*/5 * * * *',
       onTick: () => {
