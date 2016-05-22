@@ -6,6 +6,7 @@ var anim = require('./animation')
 
 var board = new five.Board()
 var strip = null
+var modeSelect = null
 var apikey = require('./.api_key.json')
 var position = require('./locations').nola
 var forecast = new Forecast({
@@ -17,6 +18,7 @@ var forecast = new Forecast({
 var ranges = require('./colors')
 var temperatureColors = new Array(8) // Probably should just make this a constant
 var animation = null
+var selectedAnimationFunction = anim.breath
 
 function getColor(temperature) {
   var color = ranges.reduce((p, c) => {
@@ -64,7 +66,16 @@ function off() {
   strip.show()
 }
 
+function tick() {
+  selectedAnimationFunction(strip, temperatureColors)
+}
+
 board.on("ready", function() {
+  modeSelect = new five.Switch({pin: 0, isPullup: true});
+
+  modeSelect.on('close', () => { selectedAnimationFunction = anim.breath })
+  modeSelect.on('open', () => { selectedAnimationFunction = anim.twinkle })
+
   strip = new pixel.Strip({
     board: this,
     controller: "FIRMATA",
@@ -77,7 +88,7 @@ board.on("ready", function() {
       off: off
     })
     temperatureColors = temperatureColors.fill('black')
-    animation = setInterval(() => anim.breath(strip, temperatureColors), 1000/30) // 10 fps
+    animation = setInterval(tick, 1000/30) // 10 fps
 
     new CronJob({
       cronTime: '*/5 * * * *',
