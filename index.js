@@ -6,11 +6,12 @@ var forecast = require('./forecast')
 
 var board = new five.Board()
 var strip = null
-var modeSelect = null
+var animSelect, modeSelect
 var ranges = require('./colors')
 var temperatureColors = new Array(8) // Probably should just make this a constant
 var animation = null
 var selectedAnimationFunction = anim.breath
+var selectedForecastFunction = forecast.filterHourly
 
 function getColor(temperature) {
   var color = ranges.reduce((p, c) => {
@@ -22,7 +23,7 @@ function getColor(temperature) {
 
 function displayForecast(weather) {
   temperatureColors[0] = getColor(weather.currently.temperature)
-  var values = forecast.filterHourly(weather, strip.stripLength())
+  var values = selectedForecastFunction(weather, strip.stripLength())
   values.map((c, idx) => {
     temperatureColors[idx+1] = getColor(c)
   })
@@ -44,11 +45,19 @@ function tick() {
   selectedAnimationFunction(strip, temperatureColors)
 }
 
-board.on("ready", function() {
-  modeSelect = new five.Switch({pin: 0, isPullup: true});
+function updateForecast() {
+  strip.color('black')
+  forecast.get().then(displayForecast).catch(handleError)
+}
 
-  modeSelect.on('close', () => { selectedAnimationFunction = anim.breath })
-  modeSelect.on('open', () => { selectedAnimationFunction = anim.twinkle })
+board.on("ready", function() {
+  animSelect = new five.Switch({pin: 0, isPullup: true});
+  modeSelect = new five.Switch({pin: 1, isPullup: true});
+
+  animSelect.on('close', () => { selectedAnimationFunction = anim.breath })
+  animSelect.on('open', () => { selectedAnimationFunction = anim.twinkle })
+  modeSelect.on('close', () => { selectedForecastFunction = forecast.filterHourly; updateForecast() })
+  modeSelect.on('open', () => { selectedForecastFunction = forecast.filterDaily; updateForecast() })
 
   strip = new pixel.Strip({
     board: this,
@@ -66,11 +75,7 @@ board.on("ready", function() {
 
     new CronJob({
       cronTime: '*/5 * * * *',
-      onTick: () => {
-        console.log('Fetching Weather')
-        strip.color('black')
-        forecast.get().then(displayForecast).catch(handleError)
-      },
+      onTick: updateForecast,
       start: true,
       runOnInit: true
     })

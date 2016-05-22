@@ -6,7 +6,10 @@ var forecast = new Forecast({
   service: 'forecast.io',
   key: apikey,
   units: 'celcius',
-  cache: false,
+  cache: true,
+  ttl: {
+    minutes: 4
+  }
 })
 
 function getForecast() {
@@ -24,7 +27,7 @@ function getHourlyValues(weather, length) {
 }
 
 function getDailyValues(weather, length) {
-  return weather.daily.data.slice(0, length()-1).map((c) => { return c.temperatureMax })
+  return weather.daily.data.slice(0, length-1).map((c) => { return c.temperatureMax })
 }
 
 module.exports = {
