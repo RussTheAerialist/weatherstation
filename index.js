@@ -50,14 +50,34 @@ function updateForecast() {
   forecast.get().then(displayForecast).catch(handleError)
 }
 
+function toggleAnimation(type) {
+  if (selectedAnimationFunction == anim.breath && type == 'close') {
+    selectedAnimationFunction = anim.twinkle
+  } else if (selectedAnimationFunction == anim.twinkle && type == 'open') {
+    selectedAnimationFunction = anim.breath
+  }
+}
+
+function toggleMode(type) {
+  if (selectedForecastFunction == forecast.filterHourly && type == 'close') {
+    selectedForecastFunction = forecast.filterDaily
+    return true
+  } else if (selectedForecastFunction == forecast.filterDaily && type == 'open') {
+    selectedForecastFunction = forecast.filterHourly
+    return true
+  }
+
+  return false
+}
+
 board.on("ready", function() {
   animSelect = new five.Switch({pin: 0, isPullup: true});
   modeSelect = new five.Switch({pin: 1, isPullup: true});
 
-  animSelect.on('close', () => { selectedAnimationFunction = anim.breath })
-  animSelect.on('open', () => { selectedAnimationFunction = anim.twinkle })
-  modeSelect.on('close', () => { selectedForecastFunction = forecast.filterHourly; updateForecast() })
-  modeSelect.on('open', () => { selectedForecastFunction = forecast.filterDaily; updateForecast() })
+  animSelect.on('close', () => toggleAnimation('close'))
+  animSelect.on('open', () => toggleAnimation('open'))
+  modeSelect.on('close', () => { if (toggleMode('close')) updateForecast() })
+  modeSelect.on('open', () => { if (toggleMode('open')) updateForecast() })
 
   strip = new pixel.Strip({
     board: this,
