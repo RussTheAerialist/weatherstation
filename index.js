@@ -6,7 +6,7 @@ var CronJob = require('cron').CronJob
 var board = new five.Board()
 var strip = null
 var apikey = require('./.api_key.json')
-var position = [ 48.9894, -122.7753] // Semiahmoo
+var position = require('./locations').seattle
 var forecast = new Forecast({
   service: 'forecast.io',
   key: apikey,
