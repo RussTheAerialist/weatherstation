@@ -7,7 +7,7 @@ function getColor(c1, c2, percent) {
   return one(['RGB', red, green, blue, 1.0]).hex()
 }
 
-function threecolor(c1, c2, c3, steps) {
+function threecolor(c1, c2, c3, offset, steps) {
   var colors = []
   var i
 
@@ -17,12 +17,11 @@ function threecolor(c1, c2, c3, steps) {
       i < steps/2.0 ? c2 : c3,
       i < steps/2.0 ? i/(steps/2.0) : (i-steps/2.0)/(steps/2.0)
     )
-    colors.push([i+10, color])
+    colors.push([i+offset, color])
   }
 
   return colors
 }
 
-var colors = threecolor(one('blue'), one('green'), one('red'), 22)
+var colors = threecolor(one('#000040'), one('#004000'), one('#400000'), 10, 22)
 module.exports = colors
-console.log(colors)
