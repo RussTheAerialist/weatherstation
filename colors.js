@@ -17,12 +17,12 @@ function threecolor(c1, c2, c3, steps) {
       i < steps/2.0 ? c2 : c3,
       i < steps/2.0 ? i/(steps/2.0) : (i-steps/2.0)/(steps/2.0)
     )
-    colors.push([i, color])
+    colors.push([i+10, color])
   }
 
   return colors
 }
 
-var colors = threecolor(one('blue'), one('green'), one('red'), 32)
+var colors = threecolor(one('blue'), one('green'), one('red'), 22)
 module.exports = colors
 console.log(colors)

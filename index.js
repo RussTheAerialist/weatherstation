@@ -34,18 +34,19 @@ function getForecast() {
 }
 
 function getHourlyValues(weather) {
-  return weather.hourly.data.slice(0, strip.stripLength()).map((c) => { return c.temperature })
+  return weather.hourly.data.slice(0, strip.stripLength()-1).map((c) => { return c.temperature })
 }
 
 function getDailyValues(weather) {
-  return weather.daily.data.slice(0, strip.stripLength()).map((c) => { return c.temperatureMax })
+  return weather.daily.data.slice(0, strip.stripLength()-1).map((c) => { return c.temperatureMax })
 }
 
 function displayForecast(weather) {
+  strip.pixel(0).color(getColor(weather.currently.temperature))
   var values = getHourlyValues(weather)
   values.map((c, idx) => {
     console.log(c)
-    strip.pixel(idx).color(getColor(c))
+    strip.pixel(idx+1).color(getColor(c))
   })
   strip.show()
 }
