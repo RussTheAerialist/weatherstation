@@ -23,5 +23,5 @@ function threecolor(c1, c2, c3, offset, steps) {
   return colors
 }
 
-var colors = threecolor(one('#000040'), one('#004000'), one('#400000'), 10, 22)
+var colors = threecolor(one('#000080'), one('#008000'), one('#800000'), 10, 22)
 module.exports = colors
