@@ -15,6 +15,12 @@ var forecast = new Forecast({
 })
 var ranges = require('./colors')
 var temperatureColors = new Array(8) // Probably should just make this a constant
+var animation = null
+var breathIntensity = 25
+
+function clamp(value, min, max) {
+  return Math.max(Math.min(value, max), min)
+}
 
 function getColor(temperature) {
   var color = ranges.reduce((p, c) => {
@@ -63,9 +69,34 @@ function twinkle() {
     var red = color.r * randomValue
     var green = color.g * randomValue
     var blue = color.b * randomValue
-    console.log(red, green, blue)
     pixel.color([Math.round(red), Math.round(green), Math.round(blue)])
   }  
+  strip.show()
+}
+
+function calcBreath(value, cycle) {
+  return clamp(Math.round(value + breathIntensity * ((Math.exp(Math.sin(cycle)) - 0.36787944) / 2.35040238729) - breathIntensity/2.0), 0, 255)
+}
+
+function breath() {
+  var cycleTime = new Date().getTime() / 2000.0 * Math.PI
+  temperatureColors.forEach((c, idx) => {
+    var pixel = strip.pixel(idx)
+    pixel.color(temperatureColors[idx])
+    var color = pixel.color()
+    var r = calcBreath(color.r, cycleTime + (idx/10.0))
+    var g = calcBreath(color.g, cycleTime + (idx/10.0))
+    var b = calcBreath(color.b, cycleTime + (idx/10.0))
+    pixel.color([r, g, b])
+  })
+  strip.show()
+}
+
+function off() {
+  if (animation !== null) {  
+    clearInterval(animation)
+  }
+  strip.color('black')
   strip.show()
 }
 
@@ -78,7 +109,12 @@ board.on("ready", function() {
 
 
   strip.on("ready", function() {
-    setInterval(twinkle, 1000/30) // 10 fps
+    board.repl.inject({
+      off: off
+    })
+    temperatureColors = temperatureColors.fill('black')
+    animation = setInterval(breath, 1000/30) // 10 fps
+
     new CronJob({
       cronTime: '*/5 * * * *',
       onTick: () => {
