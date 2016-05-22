@@ -1,20 +1,12 @@
 var pixel = require('node-pixel')
 var five = require('johnny-five')
-var Forecast = require('forecast')
 var CronJob = require('cron').CronJob
 var anim = require('./animation')
+var forecast = require('./forecast')
 
 var board = new five.Board()
 var strip = null
 var modeSelect = null
-var apikey = require('./.api_key.json')
-var position = require('./locations').nola
-var forecast = new Forecast({
-  service: 'forecast.io',
-  key: apikey,
-  units: 'celcius',
-  cache: false,
-})
 var ranges = require('./colors')
 var temperatureColors = new Array(8) // Probably should just make this a constant
 var animation = null
@@ -28,27 +20,9 @@ function getColor(temperature) {
   return color[1]
 }
 
-function getForecast() {
-  return new Promise((resolve, reject) => {
-
-    forecast.get(position, (err, weather) =>{
-      if (err) return reject(err)
-      return resolve(weather)
-    })
-  })
-}
-
-function getHourlyValues(weather) {
-  return weather.hourly.data.slice(0, strip.stripLength()-1).map((c) => { return c.temperature })
-}
-
-function getDailyValues(weather) {
-  return weather.daily.data.slice(0, strip.stripLength()-1).map((c) => { return c.temperatureMax })
-}
-
 function displayForecast(weather) {
   temperatureColors[0] = getColor(weather.currently.temperature)
-  var values = getHourlyValues(weather)
+  var values = forecast.filterHourly(weather, strip.stripLength())
   values.map((c, idx) => {
     temperatureColors[idx+1] = getColor(c)
   })
@@ -95,7 +69,7 @@ board.on("ready", function() {
       onTick: () => {
         console.log('Fetching Weather')
         strip.color('black')
-        getForecast().then(displayForecast).catch(handleError)
+        forecast.get().then(displayForecast).catch(handleError)
       },
       start: true,
       runOnInit: true
