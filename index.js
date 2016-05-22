@@ -33,11 +33,19 @@ function getForecast() {
   })
 }
 
+function getHourlyValues(weather) {
+  return weather.hourly.data.slice(0, strip.stripLength()).map((c) => { return c.temperature })
+}
+
+function getDailyValues(weather) {
+  return weather.daily.data.slice(0, strip.stripLength()).map((c) => { return c.temperatureMax })
+}
+
 function displayForecast(weather) {
-  var nextXHours = weather.hourly.data.slice(0, strip.stripLength())
-  nextXHours.map((c, idx) => {
-    console.log(c.temperature)
-    strip.pixel(idx).color(getColor(c.temperature))
+  var values = getHourlyValues(weather)
+  values.map((c, idx) => {
+    console.log(c)
+    strip.pixel(idx).color(getColor(c))
   })
   strip.show()
 }
@@ -60,7 +68,6 @@ board.on("ready", function() {
       onTick: () => {
         console.log('Fetching Weather')
         strip.color('black')
-        strip.show()
         getForecast().then(displayForecast).catch(handleError)
       },
       start: true,
