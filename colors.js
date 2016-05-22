@@ -23,6 +23,6 @@ function threecolor(c1, c2, c3, steps) {
   return colors
 }
 
-var colors = threecolor(one('blue'), one('green'), one('red'), 30)
+var colors = threecolor(one('blue'), one('green'), one('red'), 32)
 module.exports = colors
 console.log(colors)
