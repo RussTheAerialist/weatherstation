@@ -1,13 +1,13 @@
 var pixel = require('node-pixel')
 var five = require('johnny-five')
 var CronJob = require('cron').CronJob
-var anim = require('./animation')
-var forecast = require('./forecast')
+var anim = require('./lib/animation')
+var forecast = require('./lib/forecast')
 
 var board = new five.Board()
 var strip = null
 var animSelect, modeSelect
-var ranges = require('./colors')
+var ranges = require('./lib/colors')
 var temperatureColors = new Array(8) // Probably should just make this a constant
 var animation = null
 var selectedAnimationFunction = anim.breath
