@@ -25,6 +25,7 @@ function displayForecast(weather) {
   temperatureColors[0] = getColor(weather.currently.temperature)
   var values = selectedForecastFunction(weather, strip.stripLength())
   values.map((c, idx) => {
+    console.log(c)
     temperatureColors[idx+1] = getColor(c)
   })
 }
@@ -46,6 +47,7 @@ function tick() {
 }
 
 function updateForecast() {
+  console.log('fetching forecast')
   strip.color('black')
   forecast.get().then(displayForecast).catch(handleError)
 }

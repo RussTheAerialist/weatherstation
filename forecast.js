@@ -1,7 +1,7 @@
 var Forecast = require('forecast')
 
 var apikey = require('./.api_key.json')
-var position = require('./locations').nola
+var position = require('./locations').seattle
 var forecast = new Forecast({
   service: 'forecast.io',
   key: apikey,
