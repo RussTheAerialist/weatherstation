@@ -1,5 +1,5 @@
 {
-  "name": "weatherstrip",
+  "name": "weatherstation",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Russell Hay",
   "license": "ISC",
   "dependencies": {
     "cron": "^1.1.0",
@@ -15,5 +15,6 @@
     "johnny-five": "^0.9.50",
     "node-pixel": "^0.6.1",
     "onecolor": "^3.0.3"
-  }
+  },
+  "private": true
 }
