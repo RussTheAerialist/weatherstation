@@ -14,7 +14,8 @@
     "forecast": "^0.2.1",
     "johnny-five": "^0.9.50",
     "node-pixel": "^0.6.1",
-    "onecolor": "^3.0.3"
+    "onecolor": "^3.0.3",
+    "ledutils": "*"
   },
   "private": true
 }
