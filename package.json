@@ -8,14 +8,15 @@
   },
   "keywords": [],
   "author": "Russell Hay",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
+    "cb-toggle": "*",
     "cron": "^1.1.0",
     "forecast": "^0.2.1",
     "johnny-five": "^0.9.50",
+    "ledutils": "*",
     "node-pixel": "^0.6.1",
-    "onecolor": "^3.0.3",
-    "ledutils": "*"
+    "onecolor": "^3.0.3"
   },
   "private": true
 }
